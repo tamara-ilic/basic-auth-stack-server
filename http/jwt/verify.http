@@ -1,0 +1,2 @@
+GET http://localhost:8080/verify-token
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNWNlODE5OTM1ZTUzOWMzNDNmMTQxZWNlIiwiaWF0IjoxNjQ3NDYwOTc0LCJleHAiOjE2NDc0NjI3NzR9.FjxFK-7zTfL0mdrMfh8Bw5lqxB334zWvFGW4yBZeUas

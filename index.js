@@ -33,7 +33,8 @@ app.use((req, res, next) => {
 app.use(express.json())
 app.use(cors())
 app.use(jwt.decodeToken) // runs only when request happens, including parenthes makes it run every time
- 
+// app.use(jwt.giveThisNewUserATokenIfTheyDontHaveOne)
+
 app.use('/messages', messageRouter)
 app.use('/users', userRouter)
 

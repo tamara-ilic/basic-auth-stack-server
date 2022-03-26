@@ -1,6 +1,5 @@
 const express = require('express')
 const router = express.Router()
-// const Message = require('../models/Message')
 const MessageController = require('../controllers/Message')
 const auth = require('../utilities/auth')
 

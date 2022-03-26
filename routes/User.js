@@ -6,17 +6,17 @@ const jwt = require('../utilities/jwt')
 router
     .route('/')
     .get(async (request, response) => {
-        const Users = await User.find({})
-        response.json(Users)
+        const users = await User.find({})
+        response.json(users)
     })
     .post(async (request, response) => {
         try {
-          const res = await User.create(request.body)
+          const user = await User.create(request.body)
           response.send({
             message: 'User created successfully',
-            data: res,
+            data: user,
             success: true,
-            jwt: jwt.generateToken({ id: response._id })
+            jwt: jwt.generateToken({ id: user._id })
           })
         } catch (error) {
           switch (error.code) {
@@ -38,9 +38,48 @@ router
         }
       })
 
+// new user comes to website (anon) - give them anon token/create anon session
+// they choose to register/login - attach their user._id to their existing token/session 
+// they logout - destroy their token
+
+router    
+    .route('/login')
+    .post(async (request, response) => {
+        console.log(request.body.email, request.body.password)
+        try {
+            User.authenticate(request.body.email, request.body.password, (error, user) => {
+                if(error) {
+                    console.log(error)
+                    response.send({
+                        message: error.message,
+                        success: false,
+                        data: error,
+                      })
+                } else {
+                    console.log(`${request.body.email} logged in successfully`);
+                    response.send({
+                        message: 'User logged in successfully',
+                        data: user,
+                        success: true,
+                        jwt: jwt.generateToken({ id: user._id })
+                      })
+                }
+            })
+          } catch (error) {
+            switch (error.code) {
+              default:
+                console.log(`${request.body.email} failed to login`)
+                response.status(400).send({
+                  message: error.message,
+                  success: false,
+                  data: error,
+                })
+            }
+        }
+    })
+
 router.get('/me', async (request, response) => {
     if (request.token.id) {
-        console.log(request.token.id)
         try {
             const user = await User.findById(request.token.id)
             if (!user) {
@@ -50,7 +89,6 @@ router.get('/me', async (request, response) => {
                     data: user
                 })
             } else {
-                console.log(user)
                 response.send({
                     message: 'User found',
                     success: true,
@@ -75,11 +113,11 @@ router.get('/me', async (request, response) => {
 router
     .route('/:id')
     .get(async (request, response) => {
-        const User = await User.find({ _id: request.params.id })
-        response.json(User)
+        const user = await User.find({ _id: request.params.id })
+        response.json(user)
     })
     .put(async (request, response) => {
-        const User = await User.findOneAndUpdate(
+        const user = await User.findOneAndUpdate(
             { _id: request.params.id },
             request.body,
             // sends back the updated version, which is not the default
@@ -87,7 +125,7 @@ router
                 new: true
             }
         )
-        response.send(User)
+        response.send(user)
     })
     .delete(async (request, response) => {
         const User = await User.findByIdAndDelete(
